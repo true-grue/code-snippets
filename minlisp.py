@@ -26,7 +26,7 @@ mul = make_binop(operator.mul)
 eq = make_binop(operator.eq)
 lt = make_binop(operator.lt)
 
-fact = define(lambda n: [ifelse, [lt, n, 1],
+fact = define(lambda n: [ifelse, [lt, n, 2],
   1,
   [mul, n, [fact, [sub, n, 1]]]
 ])
