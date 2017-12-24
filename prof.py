@@ -8,6 +8,14 @@ def prof(name):
     return prof2
   return prof1
 
+def memo(f):
+  table = {}
+  def memo1(*args):
+    if args not in table:
+      table[args] = f(*args)
+    return table[args]
+  return memo1
+
 @prof("factorial")
 def fact(n):
   if n < 2:
@@ -15,12 +23,14 @@ def fact(n):
   else:
     return n * fact(n - 1)
 
+@memo
 @prof("fibonacci number")
 def fib(n):
   if n > 1:
     return fib(n - 1) + fib(n - 2)
   return n
 
+@memo
 @prof("ackermann")
 def ack(m, n):
   if m == 0:
@@ -30,8 +40,4 @@ def ack(m, n):
   else:
     return ack(m - 1, ack(m, n - 1))
 
-fact(10)
-fib(10)
-ack(3, 3)
-
-print(PROF)
+print(fact(10), fib(50), ack(3, 5), PROF)
