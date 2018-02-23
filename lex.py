@@ -41,7 +41,7 @@ def token(tag):
 
 rules = (
   (r"\s+", skip_token),
-  (r"\\[^\n]*", skip_token),
+  (r"#[^\n]*", skip_token),
   (r"0[xX][a-fA-F0-9]+", number_token(16)),
   (r"\d+", number_token(10)),
   (r'".*"', string_token),
@@ -50,6 +50,7 @@ rules = (
 )
 
 source = """
+# comment
 a = 0xff;
 b = 42 + 1;
 print("hello");
