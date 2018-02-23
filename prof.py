@@ -24,7 +24,7 @@ def fact(n):
     return n * fact(n - 1)
 
 @memo
-@prof("fibonacci number")
+@prof("fibonacci")
 def fib(n):
   if n > 1:
     return fib(n - 1) + fib(n - 2)
