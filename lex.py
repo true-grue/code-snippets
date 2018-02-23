@@ -1,15 +1,14 @@
 import re
 
 class Lex:
-  def __init__(self, source, rules):
+  def __init__(self, source):
     self.source = source
-    self.rules = rules
     self.pos = 0
 
-def scan(lex):
+def scan(lex, rules):
   while True:
     pos = lex.pos
-    for pat, func in lex.rules:
+    for pat, func in rules:
       matched = re.match(pat, lex.source[lex.pos:])
       if matched:
         pos = lex.pos + len(matched.group())
@@ -39,7 +38,7 @@ def token(tag):
     return (tag, lex.source[i:j], i)
   return func
 
-rules = (
+lex_rules = (
   (r"\s+", skip_token),
   (r"#[^\n]*", skip_token),
   (r"0[xX][a-fA-F0-9]+", number_token(16)),
@@ -56,9 +55,9 @@ b = 42 + 1;
 print("hello");
 """
 
-s = Lex(source, rules)
+s = Lex(source)
 
-for l in scan(s):
+for l in scan(s, lex_rules):
   print(l)
 
 print(s.pos == len(s.source))
