@@ -1,3 +1,5 @@
+# simple lexer
+
 import re
 
 class Lex:
@@ -7,18 +9,18 @@ class Lex:
 
 def scan(lex, rules):
   while True:
-    pos = lex.pos
+    next_pos = lex.pos
     for pat, func in rules:
       matched = re.match(pat, lex.source[lex.pos:])
       if matched:
-        pos = lex.pos + len(matched.group())
-        token = func(lex, lex.pos, pos)
+        next_pos = lex.pos + len(matched.group())
+        token = func(lex, lex.pos, next_pos)
         if token is not None:
           yield token
         break
-    if lex.pos == pos:
+    if lex.pos == next_pos:
       return
-    lex.pos = pos
+    lex.pos = next_pos
 
 # Example
 
