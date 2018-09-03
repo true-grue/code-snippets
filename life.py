@@ -9,8 +9,8 @@ SCREEN_W = GRID_W * 15
 SCREEN_H = GRID_H * 15
 
 States = [
-  [[False for x in range(GRID_W)] for y in range(GRID_H)],
-  [[False for x in range(GRID_W)] for y in range(GRID_H)]
+  [[False for y in range(GRID_H)] for x in range(GRID_W)],
+  [[False for y in range(GRID_H)] for x in range(GRID_W)]
 ]
 
 root = tk.Tk()
@@ -18,33 +18,33 @@ C = tk.Canvas(root, width=SCREEN_W, height=SCREEN_H)
 C.pack()
 
 def make_grid():
-  grid = [[] for x in range(GRID_H)]
+  grid = [[] for x in range(GRID_W)]
   w, h = SCREEN_W / GRID_W, SCREEN_H / GRID_H
-  for y in range(GRID_H):
-    for x in range(GRID_W):
+  for x in range(GRID_W):
+    for y in range(GRID_H):   
       r = C.create_rectangle(x * w, y * h, x * w + w, y * h + h, fill="white")
-      grid[y].append(r)
+      grid[x].append(r)
   return grid
 
 Grid = make_grid()
 
 def update_grid(grid, state):
-  for y in range(GRID_H):
-    for x in range(GRID_W):
+  for x in range(GRID_W):
+    for y in range(GRID_H):
       C.itemconfig(grid[x][y], fill="red" if state[x][y] else "white")
 
 def get_neighbors(state, x, y):
   n = -int(state[x][y])
-  for j in (-1, 0, 1):
-    for i in (-1, 0, 1):
+  for i in (-1, 0, 1):
+    for j in (-1, 0, 1):
       x1, y1 = x + i, y + j
       if 0 <= x1 < GRID_W and 0 <= y1 < GRID_H:
         n += int(state[x1][y1])
   return n
 
 def update_state(old_state, new_state):
-  for y in range(GRID_H):
-    for x in range(GRID_W):
+  for x in range(GRID_W):
+    for y in range(GRID_H):
       n = get_neighbors(old_state, x, y)
       if old_state[x][y] and n not in (2, 3):
         new_state[x][y] = False
