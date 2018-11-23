@@ -86,12 +86,18 @@ eval_rules = [
   [Div(Num(M("x")), Num(M("y"))), Num(App("/", M("x"), M("y")))],
   [Add(M("x"), Num(0)), M("x")],
   [Add(Num(0), M("x")), M("x")],
+  [Add(M("x"), Num(M("y"))), Add(Num(M("y")), M("x"))],
+  [Add(Num(M("x")), Add(Num(M("y")), M("z"))),
+    Add(Add(Num(M("x")), Num(M("y"))), M("z"))],
   [Sub(M("x"), Num(0)), M("x")],
   [Sub(M("x"), M("x")), Num(0)],
   [Mul(M("x"), Num(1)), M("x")],
   [Mul(Num(1), M("x")), M("x")],
   [Mul(M("x"), Num(0)), Num(0)],
   [Mul(Num(0), M("x")), Num(0)],
+  [Mul(M("x"), Num(M("y"))), Mul(Num(M("y")), M("x"))],
+  [Mul(Num(M("x")), Mul(Num(M("y")), M("z"))),
+    Mul(Mul(Num(M("x")), Num(M("y"))), M("z"))],
   [Div(M("x"), Num(1)), M("x")],
   [Div(M("x"), M("x")), Num(1)],
   [Div(Num(0), M("x")), Num(0)],
@@ -102,15 +108,15 @@ eval_rules = [
 deriv_rules = [
   [Deriv(M("x"), Num(M("y"))), Num(0)],
   [Deriv(M("x"), M("x")), Num(1)],
-  [Deriv(M("x"), Pow(M("x"), M("y"))),
-    Mul(M("y"), Pow(M("x"), Sub(M("y"), Num(1))))],
+  [Deriv(M("x"), Pow(M("u"), M("v"))),
+    Mul(Mul(M("v"), Pow(M("u"), Sub(M("v"), Num(1)))), Deriv(M("x"), M("u")))],
   [Deriv(M("x"), Add(M("u"), M("v"))),
     Add(Deriv(M("x"), M("u")), Deriv(M("x"), M("v")))],
   [Deriv(M("x"), Mul(M("u"), M("v"))),
     Add(Mul(M("u"), Deriv(M("x"), M("v"))), Mul(M("v"), Deriv(M("x"), M("u"))))]
 ]
 
-expr = Add(Add(Pow(Var("x"), Num(4)), Pow(Var("x"), Num(2))), Var("x"))
+expr = Pow(Add(Mul(Num(2), Var("x")), Num(7)), Num(3))
 expr = innermost(deriv_rules, Deriv(Var("x"), expr))
 expr = innermost(eval_rules, expr)
 print(expr)
