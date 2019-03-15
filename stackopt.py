@@ -63,7 +63,7 @@ def swap(states, pc):
             states[pc].st[i] == states[pc - 1].st[i]))
         )
     return And(expr)
-        
+
 
 def rot(states, pc):
     expr = []
@@ -73,20 +73,20 @@ def rot(states, pc):
         expr.append(
             If(i == states[pc].sp - 3, states[pc].st[i] == states[pc - 1].st[idx(i + 1)],
             If(i == states[pc].sp - 2, states[pc].st[i] == states[pc - 1].st[idx(i + 1)],
-            If(i == states[pc].sp - 1, states[pc].st[i] == states[pc - 1].st[idx(i - 2)],               
+            If(i == states[pc].sp - 1, states[pc].st[i] == states[pc - 1].st[idx(i - 2)],
             states[pc].st[i] == states[pc - 1].st[i])))
         )
     return And(expr)
 
 
-NAMES = "dup drop swap over rot".split()
+OPS = [dup, drop, swap, over, rot]
 
 
 def instr(states, op, pc):
-    return If(op == 0, dup(states, pc),
-             If(op == 1, drop(states, pc),
-                If(op == 2, swap(states, pc),
-                   If(op == 3, over(states, pc), rot(states, pc)))))
+    expr = OPS[-1](states, pc)
+    for i in reversed(range(len(OPS) - 1)):
+        expr = If(op == i, OPS[i](states, pc), expr)
+    return expr
 
 
 def opt(steps):
@@ -102,7 +102,7 @@ def opt(steps):
         s.add(states[i].sp >= 0, states[i].sp < DEPTH)
     code = IntVector("code", steps - 1)
     for x in code:
-        s.add(x >= 0, x < len(NAMES))
+        s.add(x >= 0, x < len(OPS))
 
     fill_stack(states[0], INS)
     fill_stack(states[-1], OUTS)
@@ -133,5 +133,6 @@ for i in range(steps):
     dump_stack(states, i)
     print()
 
+names = [f.__name__ for f in OPS]
 for x in code:
-    print(NAMES[m.eval(x).as_long()], end=" ")
+    print(names[m.eval(x).as_long()], end=" ")
