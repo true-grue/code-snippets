@@ -4,47 +4,43 @@
 
 (define-language stack-lang
   (op ::= + - * / dup drop swap)
-  (val ::= number)
-  (cmd ::= op val)
-  (prog ::= (void ... cmd ...))
-  (st ::= (val ...))
-  (E ::= hole (void ... E cmd ...)))
+  (lit ::= number)
+  (cmd ::= op lit)
+  (prog ::= (cmd ...))
+  (st ::= (lit ...)))
 
 (define stack-red
   (reduction-relation stack-lang
-   #:domain (prog st)
-   (--> [(in-hole E val_1) (val ...)]
-        [(in-hole E void) (val_1 val ...)]
+   #:domain [prog st]
+   (--> [(lit_1 cmd ...) (lit ...)]
+        [(cmd ...) (lit_1 lit ...)]
         "literal")
-   (--> [(in-hole E dup) (val_1 val ...)]
-        [(in-hole E void) (val_1 val_1 val ...)]
+   (--> [(dup cmd ...) (lit_1 lit ...)]
+        [(cmd ...) (lit_1 lit_1 lit ...)]
         "dup")
-   (--> [(in-hole E drop) (val_1 val ...)]
-        [(in-hole E void) (val ...)]
+   (--> [(drop cmd ...) (lit_1 lit ...)]
+        [(cmd ...) (lit ...)]
         "drop")
-   (--> [(in-hole E swap) (val_1 val_2 val ...)]
-        [(in-hole E void) (val_2 val_1 val ...)]
+   (--> [(swap cmd ...) (lit_1 lit_2 lit ...)]
+        [(cmd ...) (lit_2 lit_1 lit ...)]
         "swap")
-   (--> [(in-hole E +) (val_1 val_2 val ...)]
-        [(in-hole E void) (val_3 val ...)]
-        (where val_3 ,(+ (term val_2) (term val_1)))
+   (--> [(+ cmd ...) (lit_1 lit_2 lit ...)]
+        [(cmd ...) (lit_3 lit ...)]
+        (where lit_3 ,(+ (term lit_2) (term lit_1)))
         "+")
-   (--> [(in-hole E -) (val_1 val_2 val ...)]
-        [(in-hole E void) (val_3 val ...)]
-        (where val_3 ,(- (term val_2) (term val_1)))
+   (--> [(- cmd ...) (lit_1 lit_2 lit ...)]
+        [(cmd ...) (lit_3 lit ...)]
+        (where lit_3 ,(- (term lit_2) (term lit_1)))
         "-")
-   (--> [(in-hole E *) (val_1 val_2 val ...)]
-        [(in-hole E void) (val_3 val ...)]
-        (where val_3 ,(* (term val_2) (term val_1)))
+   (--> [(* cmd ...) (lit_1 lit_2 lit ...)]
+        [(cmd ...) (lit_3 lit ...)]
+        (where lit_3 ,(* (term lit_2) (term lit_1)))
         "*")
-   (--> [(in-hole E /) (val_1 val_2 val ...)]
-        [(in-hole E void) (val_3 val ...)]
-        (where val_3 ,(/ (term val_2) (term val_1)))
+   (--> [(/ cmd ...) (lit_1 lit_2 lit ...)]
+        [(cmd ...) (lit_3 lit ...)]
+        (where lit_3 ,(/ (term lit_2) (term lit_1)))
         "/")
-   (--> [(void void ...) st]
-        [() st]
-        "cleanup")
    ))
 
-(test-->> stack-red (term ((dup * 1 -) (4))) (term (() (15))))
+(test-->> stack-red (term [(dup * 1 -) (4)]) (term [() (15)]))
   
